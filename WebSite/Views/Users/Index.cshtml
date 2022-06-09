@@ -1,0 +1,89 @@
+﻿@model WebSite.Models.User.IndexUserViewModel
+
+@{
+    ViewData["Title"] = "Index";
+
+    if (!Context.User.Claims.Any()) return;
+
+    var isAdmin = bool.Parse(Context.User.FindFirst("isadmin")!.Value);
+}
+
+<h1>Index</h1>
+
+<form asp-action="Index">
+    Filter:
+    <div class="form-group">
+        <label asp-for="Filter.UserName" class="control-label"></label>
+        <input asp-for="Filter.UserName" class="form-control" />
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Filter" class="btn btn-primary" />
+    </div>
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Filter.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Filter.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Filter.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Filter.UserName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Filter.IsAdmin)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Users) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserName)
+            </td>
+            <td>
+                @if (item.IsAdmin) @("Yes") else @("No")
+            </td>
+            <td>
+                @if (item.Id == int.Parse(Context.User.FindFirst("id")!.Value) || isAdmin)
+                {
+                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) @(" | ")
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id }) @(" | ")
+                }
+                @Html.ActionLink("Details", "Details", new { id = item.Id })
+                @if (isAdmin)
+                {
+                    @if (item.IsAdmin)
+                    {
+                        @if (item.Id != 1)
+                        {
+                            @(" | ")
+                            <a asp-action="Demote" asp-route-id="@item.Id">Demote</a>
+                        }
+                    }
+                    else
+                    {
+                        @(" | ")
+                        <a asp-action="Promote" asp-route-id="@item.Id">Promote</a>
+                    }
+                }
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

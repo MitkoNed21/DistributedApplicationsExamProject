@@ -1,0 +1,79 @@
+﻿@model WebSite.Models.Message.MessageViewModel
+
+@{
+    ViewData["Title"] = "Details";
+
+    if (!Context.User.Claims.Any()) return;
+
+    var isAdmin = bool.Parse(Context.User.FindFirst("isadmin")!.Value);
+
+    var mbId = (int?)ViewData["mbId"];
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Message</h4>
+    <hr />
+    <dl class="row">
+    @if (isAdmin)
+    {
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Id)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Id)
+        </dd>
+    }
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Content)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Content)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IsImportant)
+        </dt>
+        <dd class = "col-sm-10">
+            @if (Model.IsImportant) @("Yes") else @("No")
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CreatedByUsername)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CreatedByUsername) @if (isAdmin) @($"(Id: {Model.CreatedById})")
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.MessageBoardName)
+        </dt>
+        <dd class = "col-sm-10">
+            <a asp-action="Details" asp-controller="messageBoards" asp-route-id="@Model.MessageBoardId">
+                @Model.MessageBoardName
+            </a> @if (isAdmin) @($"(Id: {Model.MessageBoardId})")
+        </dd>
+    </dl>
+</div>
+<div>
+    @if (mbId.HasValue)
+    {
+        @if (Model.CreatedById == int.Parse(Context.User.FindFirst("id")!.Value) || isAdmin)
+        {
+            @Html.ActionLink("Edit", "Edit", new { id = Model.Id, messageBoardId = mbId }) @(" | ")
+        }
+        <a asp-action="Index" asp-route-messageBoardId="@mbId">Back to List</a>
+    }
+    else
+    {
+        @if (Model.CreatedById == int.Parse(Context.User.FindFirst("id")!.Value) || isAdmin)
+        {
+            @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) @(" | ")
+        }
+        <a asp-action="Index">Back to List</a>
+    }
+</div>

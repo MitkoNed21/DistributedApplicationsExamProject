@@ -1,0 +1,24 @@
+﻿body {
+    
+}
+
+ul {
+    background-color: yellow;
+    display: flex;
+}
+
+li {
+    list-style: none;
+    padding: 20px;
+}
+
+nav {
+    /* display: flex; */
+}
+
+nav a,
+nav p,
+nav span {
+    text-transform: uppercase;
+    text-decoration: none;
+}
